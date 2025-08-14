@@ -1,4 +1,4 @@
-package com.raxrot.back.service;
+package com.raxrot.back.services;
 
 import org.springframework.web.multipart.MultipartFile;
 

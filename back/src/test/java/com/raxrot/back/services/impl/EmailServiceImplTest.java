@@ -1,4 +1,4 @@
-package com.raxrot.back.service.impl;
+package com.raxrot.back.services.impl;
 
 import com.raxrot.back.exceptions.ApiException;
 import org.junit.jupiter.api.BeforeEach;

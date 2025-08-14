@@ -1,7 +1,7 @@
-package com.raxrot.back.service.impl;
+package com.raxrot.back.services.impl;
 
 import com.raxrot.back.exceptions.ApiException;
-import com.raxrot.back.service.EmailService;
+import com.raxrot.back.services.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
