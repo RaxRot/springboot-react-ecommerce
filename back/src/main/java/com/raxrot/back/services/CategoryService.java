@@ -1,8 +1,8 @@
 package com.raxrot.back.services;
 
-import com.raxrot.back.dtos.CategoryPageResponse;
-import com.raxrot.back.dtos.CategoryRequest;
-import com.raxrot.back.dtos.CategoryResponse;
+import com.raxrot.back.dtos.category.CategoryPageResponse;
+import com.raxrot.back.dtos.category.CategoryRequest;
+import com.raxrot.back.dtos.category.CategoryResponse;
 
 public interface CategoryService {
     CategoryResponse createCategory(CategoryRequest categoryRequest);

@@ -1,4 +1,4 @@
-package com.raxrot.back.dtos;
+package com.raxrot.back.dtos.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

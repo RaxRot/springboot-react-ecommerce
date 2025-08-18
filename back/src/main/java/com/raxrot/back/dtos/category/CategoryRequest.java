@@ -1,4 +1,4 @@
-package com.raxrot.back.dtos;
+package com.raxrot.back.dtos.category;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

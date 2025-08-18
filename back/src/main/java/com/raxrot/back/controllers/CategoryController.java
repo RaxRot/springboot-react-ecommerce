@@ -1,9 +1,9 @@
 package com.raxrot.back.controllers;
 
 import com.raxrot.back.configs.AppConstants;
-import com.raxrot.back.dtos.CategoryPageResponse;
-import com.raxrot.back.dtos.CategoryRequest;
-import com.raxrot.back.dtos.CategoryResponse;
+import com.raxrot.back.dtos.category.CategoryPageResponse;
+import com.raxrot.back.dtos.category.CategoryRequest;
+import com.raxrot.back.dtos.category.CategoryResponse;
 import com.raxrot.back.services.CategoryService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

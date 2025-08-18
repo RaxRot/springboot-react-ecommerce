@@ -1,8 +1,8 @@
 package com.raxrot.back.services.impl;
 
-import com.raxrot.back.dtos.CategoryPageResponse;
-import com.raxrot.back.dtos.CategoryRequest;
-import com.raxrot.back.dtos.CategoryResponse;
+import com.raxrot.back.dtos.category.CategoryPageResponse;
+import com.raxrot.back.dtos.category.CategoryRequest;
+import com.raxrot.back.dtos.category.CategoryResponse;
 import com.raxrot.back.exceptions.ApiException;
 import com.raxrot.back.models.Category;
 import com.raxrot.back.repositories.CategoryRepository;
