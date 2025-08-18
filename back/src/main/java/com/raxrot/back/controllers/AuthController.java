@@ -1,5 +1,6 @@
 package com.raxrot.back.controllers;
 
+import com.raxrot.back.exceptions.ApiException;
 import com.raxrot.back.models.AppRole;
 import com.raxrot.back.models.Role;
 import com.raxrot.back.models.User;
@@ -23,10 +24,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -53,24 +51,30 @@ public class AuthController {
                             loginRequest.getPassword()
                     )
             );
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            ResponseCookie token = jwtUtils.getJwtCookie(userDetails);
+
+            ResponseCookie jwtCookie = jwtUtils.getJwtCookie(userDetails);
 
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .toList();
 
-            UserInfoResponse body = new UserInfoResponse(
+            UserInfoResponse resp = new UserInfoResponse(
                     userDetails.getId(),
                     userDetails.getUsername(),
+                    userDetails.getEmail(),
                     roles
             );
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, token.toString()).body(body);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(resp);
+
         } catch (AuthenticationException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(null);
+            throw new ApiException("Invalid username or password", HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -121,5 +125,38 @@ public class AuthController {
                 "roles", saved.getRoles().stream().map(r -> r.getRoleName().name()).toList()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<UserInfoResponse> getUserInfo(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        UserInfoResponse resp = new UserInfoResponse(
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                roles
+        );
+
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/username")
+    public String getCurrentUserName(Authentication authentication) {
+        if (authentication!=null){
+            return authentication.getName();
+        }else{
+            return "NULL";
+        }
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> signoutUser() {
+        ResponseCookie сookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,сookie.toString()).body("Logout successful");
     }
 }
