@@ -15,27 +15,23 @@ public class AuthUtil {
         this.userRepository = userRepository;
     }
 
-    public String loggedInEmail(){
+    private User getCurrentUserEntity() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUserName(authentication.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + authentication.getName()));
-
-        return user.getEmail();
+        return userRepository.findByUserName(authentication.getName())
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "User Not Found with username: " + authentication.getName()
+                ));
     }
 
-    public Long loggedInUserId(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUserName(authentication.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + authentication.getName()));
-
-        return user.getUserId();
+    public String loggedInEmail() {
+        return getCurrentUserEntity().getEmail();
     }
 
-    public User loggedInUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public Long loggedInUserId() {
+        return getCurrentUserEntity().getUserId();
+    }
 
-        User user = userRepository.findByUserName(authentication.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + authentication.getName()));
-        return user;
+    public User loggedInUser() {
+        return getCurrentUserEntity();
     }
 }
