@@ -12,7 +12,9 @@ import com.raxrot.back.security.jwt.JwtUtils;
 import com.raxrot.back.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,7 +56,7 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            String token = jwtUtils.generateTokenFromUsername(userDetails);
+            ResponseCookie token = jwtUtils.getJwtCookie(userDetails);
 
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
@@ -62,12 +64,10 @@ public class AuthController {
 
             UserInfoResponse body = new UserInfoResponse(
                     userDetails.getId(),
-                    token,
                     userDetails.getUsername(),
-                    userDetails.getEmail(),
                     roles
             );
-            return ResponseEntity.ok(body);
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, token.toString()).body(body);
         } catch (AuthenticationException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(null);
