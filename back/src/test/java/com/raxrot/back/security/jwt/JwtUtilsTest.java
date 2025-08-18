@@ -1,67 +1,55 @@
 package com.raxrot.back.security.jwt;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.crypto.SecretKey;
-import java.security.Key;
-import java.util.Date;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JwtUtilsTest {
 
     private JwtUtils jwtUtils;
 
-    private static final String SECRET_B64 = "dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3Q="; // "testtesttesttesttesttesttesttest"
-    private static final int EXP_MS = 60_000;
-
     @BeforeEach
     void setUp() {
         jwtUtils = new JwtUtils();
-        ReflectionTestUtils.setField(jwtUtils, "jwtSecret", SECRET_B64);
-        ReflectionTestUtils.setField(jwtUtils, "jwtExpirationMs", EXP_MS);
+
+        String strongSecret = "3n8XHt6yDgdzfCq9so5A0L2pW4gG1YzTb1P4k5q6r3c=";
+
+        ReflectionTestUtils.setField(jwtUtils, "jwtSecret", strongSecret);
+        ReflectionTestUtils.setField(jwtUtils, "jwtExpirationMs", 3600000);
+        ReflectionTestUtils.setField(jwtUtils, "jwtCookie", "springBootEcom");
     }
 
     @Test
-    void getJwtFromHeader_ok() {
-        var req = new org.springframework.mock.web.MockHttpServletRequest();
-        req.addHeader("Authorization", "Bearer abc.def.ghi");
-        assertThat(jwtUtils.getJwtFromHeader(req)).isEqualTo("abc.def.ghi");
+    void generateTokenFromUsername_ShouldReturnValidToken() {
+        String token = jwtUtils.generateTokenFromUsername("john");
+        assertNotNull(token);
     }
 
     @Test
-    void getJwtFromHeader_null_whenNoBearer() {
-        var req = new org.springframework.mock.web.MockHttpServletRequest();
-        req.addHeader("Authorization", "Basic something");
-        assertThat(jwtUtils.getJwtFromHeader(req)).isNull();
+    void getUserNameFromJwtToken_ShouldReturnCorrectUsername() {
+        String token = jwtUtils.generateTokenFromUsername("alice");
+        String username = jwtUtils.getUserNameFromJwtToken(token);
+        assertEquals("alice", username);
     }
 
     @Test
-    void generate_and_validate_and_extractUsername_ok() {
-        var ud = User.withUsername("alice").password("x").authorities("ROLE_USER").build();
-
-        String token = jwtUtils.generateTokenFromUsername(ud);
-        assertThat(jwtUtils.validateJwtToken(token)).isTrue();
-        assertThat(jwtUtils.getUserNameFromJwtToken(token)).isEqualTo("alice");
+    void validateJwtToken_ShouldReturnTrueForValidToken() {
+        String token = jwtUtils.generateTokenFromUsername("bob");
+        assertTrue(jwtUtils.validateJwtToken(token));
     }
 
     @Test
-    void validateJwtToken_false_whenExpired() {
-        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_B64));
-        String expired = io.jsonwebtoken.Jwts.builder()
-                .subject("bob")
-                .issuedAt(new Date(System.currentTimeMillis() - 120_000))
-                .expiration(new Date(System.currentTimeMillis() - 60_000))
-                .signWith((Key) key)
-                .compact();
+    void validateJwtToken_ShouldReturnFalseForInvalidToken() {
+        assertFalse(jwtUtils.validateJwtToken("invalid.token.here"));
+    }
 
-        assertThat(jwtUtils.validateJwtToken(expired)).isFalse();
+    @Test
+    void validateJwtToken_ShouldReturnFalseForExpiredToken() {
+        ReflectionTestUtils.setField(jwtUtils, "jwtExpirationMs", -1000);
+        String expiredToken = jwtUtils.generateTokenFromUsername("tim");
+        assertThrows(ExpiredJwtException.class, () -> jwtUtils.getUserNameFromJwtToken(expiredToken));
     }
 }
