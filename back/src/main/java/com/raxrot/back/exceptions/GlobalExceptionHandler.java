@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 @Slf4j
@@ -67,6 +66,7 @@ public class GlobalExceptionHandler {
     }
 
 
+    /*
     // Access denied by Spring Security
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex,
@@ -74,6 +74,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(build(HttpStatus.FORBIDDEN, "Access denied", req, null),
                 HttpStatus.FORBIDDEN);
     }
+     */
 
     // Fallback
     @ExceptionHandler(Exception.class)
