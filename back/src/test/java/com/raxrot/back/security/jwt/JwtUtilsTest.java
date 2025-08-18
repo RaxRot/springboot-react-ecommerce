@@ -1,8 +1,10 @@
 package com.raxrot.back.security.jwt;
 
+import com.raxrot.back.security.services.UserDetailsImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseCookie;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,5 +53,35 @@ public class JwtUtilsTest {
         ReflectionTestUtils.setField(jwtUtils, "jwtExpirationMs", -1000);
         String expiredToken = jwtUtils.generateTokenFromUsername("tim");
         assertThrows(ExpiredJwtException.class, () -> jwtUtils.getUserNameFromJwtToken(expiredToken));
+    }
+
+    @Test
+    void testGetCleanJwtCookie() {
+        // given
+        String cookieName = "testJwtCookie";
+        ReflectionTestUtils.setField(jwtUtils, "jwtCookie", cookieName);
+
+        // when
+        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+
+        // then
+        assertEquals(cookieName, cookie.getName());
+        assertEquals("", cookie.getValue());
+        assertEquals("/api", cookie.getPath());
+    }
+
+    @Test
+    void testGetJwtCookie() {
+        // given
+        var userDetails = new UserDetailsImpl(1L, "john", "john@example.com", "pass", null);
+
+        // when
+        ResponseCookie cookie = jwtUtils.getJwtCookie(userDetails);
+
+        // then
+        assertEquals("springBootEcom", cookie.getName());
+        assertNotNull(cookie.getValue());
+        assertFalse(cookie.getValue().isEmpty());
+        assertEquals("/api", cookie.getPath());
     }
 }
