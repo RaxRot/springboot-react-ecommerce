@@ -116,16 +116,17 @@ public class AuthServiceImpl implements AuthService {
     private void sendEmail(SignupRequest signUpRequest) {
         emailService.sendEmail(
                 signUpRequest.getEmail(),
-                "🏦 Welcome to RaxRot Bank!",
+                "🛒 Welcome to RaxRot E-Commerce!",
                 "Hello " + signUpRequest.getUsername() + "!\n\n" +
-                        "🎉 Thank you for registering at RaxRot Bank.\n\n" +
+                        "🎉 Thank you for creating an account at RaxRot E-Commerce.\n\n" +
                         "👉 Your username for login is: " + signUpRequest.getUsername() + "\n\n" +
                         "With your new account, you can:\n" +
-                        "• Manage your balance 💳\n" +
-                        "• Make transfers 🔄\n" +
-                        "• Track your transactions 📊\n\n" +
-                        "We are glad to have you with us!\n\n" +
-                        "— The RaxRot Bank Team"
+                        "• Browse and shop for products 🛍️\n" +
+                        "• Add items to your cart 🛒\n" +
+                        "• Place secure orders 💳\n" +
+                        "• Track your purchases and delivery status 📦\n\n" +
+                        "We are excited to have you with us!\n\n" +
+                        "— The RaxRot E-Commerce Team"
         );
     }
 
