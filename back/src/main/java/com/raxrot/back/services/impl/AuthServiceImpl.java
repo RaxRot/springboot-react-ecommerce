@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
         sendEmail(signUpRequest);
 
         Map<String, Object> resp = Map.of(
-                "id", saved.getUserId(),
+                "id", saved.getId(),
                 "username", saved.getUserName(),
                 "email", saved.getEmail(),
                 "roles", saved.getRoles().stream().map(r -> r.getRoleName().name()).toList()
