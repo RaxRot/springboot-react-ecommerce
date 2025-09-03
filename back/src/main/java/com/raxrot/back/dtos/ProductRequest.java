@@ -26,4 +26,6 @@ public class ProductRequest {
     @NotNull(message = "Quantity is required")
     @Min(value = 0, message = "Quantity must not be negative")
     private Integer quantity;
+    @NotNull(message = "Category is required")
+    private Long categoryId;
 }
