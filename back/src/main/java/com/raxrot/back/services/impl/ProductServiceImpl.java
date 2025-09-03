@@ -45,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
         String imageUrl = fileUploadService.uploadFile(file);
 
         Product product = modelMapper.map(productRequest, Product.class);
+        product.setId(null);
         product.setCategory(category);
         product.setImageUrl(imageUrl);
         Product savedProduct = productRepository.save(product);
