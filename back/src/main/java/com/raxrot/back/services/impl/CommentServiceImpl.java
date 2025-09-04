@@ -38,10 +38,18 @@ public class CommentServiceImpl implements CommentService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ApiException("Product not found", HttpStatus.NOT_FOUND));
         Comment comment = modelMapper.map(request, Comment.class);
+        comment.setId(null);
         comment.setProduct(product);
         comment.setUser(me);
         Comment savedComment = commentRepository.save(comment);
-        return modelMapper.map(savedComment, CommentResponse.class);
+        return new CommentResponse(
+                savedComment.getId(),
+                savedComment.getText(),
+                savedComment.getRating(),
+                savedComment.getProduct().getId(),
+                savedComment.getUser().getUserName(),
+                savedComment.getCreatedAt()
+        );
     }
 
     @Override
@@ -136,7 +144,14 @@ public class CommentServiceImpl implements CommentService {
         comment.setText(commentRequest.getText());
         comment.setRating(commentRequest.getRating());
         Comment savedComment = commentRepository.save(comment);
-        return modelMapper.map(savedComment, CommentResponse.class);
+        return new CommentResponse(
+                savedComment.getId(),
+                savedComment.getText(),
+                savedComment.getRating(),
+                savedComment.getProduct().getId(),
+                savedComment.getUser().getUserName(),
+                savedComment.getCreatedAt()
+        );
     }
 
     @Override
