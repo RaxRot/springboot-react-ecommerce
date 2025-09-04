@@ -19,4 +19,7 @@ public class ProductFullResponse {
     private BigDecimal price;
     private Integer quantity;
     private String categoryName;
+
+    private Double averageRating;
+    private Long reviewCount;
 }
