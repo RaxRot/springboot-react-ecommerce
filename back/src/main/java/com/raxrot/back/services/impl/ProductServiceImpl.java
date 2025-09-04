@@ -8,6 +8,7 @@ import com.raxrot.back.exceptions.ApiException;
 import com.raxrot.back.models.Category;
 import com.raxrot.back.models.Product;
 import com.raxrot.back.repositories.CategoryRepository;
+import com.raxrot.back.repositories.CommentRepository;
 import com.raxrot.back.repositories.ProductRepository;
 import com.raxrot.back.services.FileUploadService;
 import com.raxrot.back.services.ProductService;
@@ -30,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
     private final FileUploadService fileUploadService;
+    private final CommentRepository commentRepository;
 
     @Override
     public ProductFullResponse create(MultipartFile file, ProductRequest productRequest) {
@@ -52,6 +54,11 @@ public class ProductServiceImpl implements ProductService {
 
         ProductFullResponse response = modelMapper.map(savedProduct, ProductFullResponse.class);
         response.setCategoryName(savedProduct.getCategory().getName());
+
+        Double avgRating = commentRepository.getAverageRatingByProductId(product.getId());
+        Long reviewCount = commentRepository.getReviewCountByProductId(product.getId());
+        response.setAverageRating(roundToOneDecimal(avgRating));
+        response.setReviewCount(reviewCount != null ? reviewCount : 0);
         return response;
     }
 
@@ -148,6 +155,10 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(()->new ApiException("Product not found", HttpStatus.NOT_FOUND));
         ProductFullResponse response = modelMapper.map(product, ProductFullResponse.class);
         response.setCategoryName(product.getCategory().getName());
+        Double avgRating = commentRepository.getAverageRatingByProductId(product.getId());
+        Long reviewCount = commentRepository.getReviewCountByProductId(product.getId());
+        response.setAverageRating(roundToOneDecimal(avgRating));
+        response.setReviewCount(reviewCount != null ? reviewCount : 0);
         return response;
     }
 
@@ -183,6 +194,12 @@ public class ProductServiceImpl implements ProductService {
 
         ProductFullResponse response = modelMapper.map(savedProduct, ProductFullResponse.class);
         response.setCategoryName(savedProduct.getCategory().getName());
+
+        Double avgRating = commentRepository.getAverageRatingByProductId(savedProduct.getId());
+        Long reviewCount = commentRepository.getReviewCountByProductId(savedProduct.getId());
+        response.setAverageRating(roundToOneDecimal(avgRating));
+        response.setReviewCount(reviewCount != null ? reviewCount : 0);
+
         return response;
     }
 
@@ -196,5 +213,10 @@ public class ProductServiceImpl implements ProductService {
         }
 
         productRepository.delete(product);
+    }
+
+    private double roundToOneDecimal(Double value) {
+        if (value == null) return 0.0;
+        return Math.round(value * 10.0) / 10.0;
     }
 }
