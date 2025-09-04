@@ -13,4 +13,5 @@ public interface ProductService {
     ProductFullResponse getProductById(Long id);
     ProductFullResponse update(Long id,MultipartFile file, ProductRequest productRequest);
     void deleteProductById(Long id);
+    ProductFullResponse addQuantity(Long id, Integer quantity);
 }

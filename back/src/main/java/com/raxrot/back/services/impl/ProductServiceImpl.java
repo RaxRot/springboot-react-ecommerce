@@ -215,6 +215,24 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(product);
     }
 
+    @Override
+    public ProductFullResponse addQuantity(Long id, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new ApiException("Quantity must be greater than 0", HttpStatus.BAD_REQUEST);
+        }
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Product not found", HttpStatus.NOT_FOUND));
+        product.setQuantity(product.getQuantity() + quantity);
+        Product savedProduct = productRepository.save(product);
+        ProductFullResponse response = modelMapper.map(savedProduct, ProductFullResponse.class);
+        response.setCategoryName(product.getCategory().getName());
+        Double avgRating = commentRepository.getAverageRatingByProductId(product.getId());
+        Long reviewCount = commentRepository.getReviewCountByProductId(product.getId());
+        response.setAverageRating(roundToOneDecimal(avgRating));
+        response.setReviewCount(reviewCount != null ? reviewCount : 0);
+        return response;
+    }
+
     private double roundToOneDecimal(Double value) {
         if (value == null) return 0.0;
         return Math.round(value * 10.0) / 10.0;

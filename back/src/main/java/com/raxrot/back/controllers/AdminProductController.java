@@ -30,12 +30,18 @@ public class AdminProductController {
             @RequestPart("data") ProductRequest productRequest,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         ProductFullResponse response = productService.update(id,file, productRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         productService.deleteProductById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("{id}/stock/{quantity}")
+    public ResponseEntity<ProductFullResponse> addQuantity(@PathVariable Long id,@PathVariable Integer quantity) {
+        ProductFullResponse productFullResponse=productService.addQuantity(id, quantity);
+        return ResponseEntity.ok(productFullResponse);
     }
 }
